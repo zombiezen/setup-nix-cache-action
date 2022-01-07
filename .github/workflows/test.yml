@@ -32,6 +32,8 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@v16
     - name: Run tests
+      env:
+        NIX_BUILD_SHELL: bash
       run: ./pre-commit.sh
   test:
     name: Unit Tests
@@ -42,4 +44,6 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@v16
     - name: Run tests
+      env:
+        NIX_BUILD_SHELL: bash
       run: nix-shell --run 'npm install && npm test'

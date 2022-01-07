@@ -20,7 +20,6 @@
 
 set -euo pipefail
 
-pwd 1>&2
 jsfiles=( dist/index.js dist/cleanup.js )
 for name in "${jsfiles[@]}"; do
   if [[ ! -e "$name" ]]; then
