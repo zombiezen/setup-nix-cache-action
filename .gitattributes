@@ -1,0 +1,4 @@
+# dist/ is built from src/.
+# 1. don't show diffs in GitHub, and
+# 2. don't try to merge files (they should be re-recorded)
+dist/*.js linguist-generated=true -merge

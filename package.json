@@ -1,0 +1,26 @@
+{
+  "name": "setup-nix-cache-action",
+  "version": "0.1.0",
+  "description": "Configure Nix to read from (and optionally write to) a custom cache",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --build tsconfig.json && node build.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "esbuild": "^0.14.10",
+    "tmp": "^0.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/node": "^16.11.18",
+    "@types/jest": "^27.4.0",
+    "@types/tmp": "^0.2.3",
+    "babel-jest": "^27.4.6",
+    "jest": "^27.4.7",
+    "typescript": "^4.5.4"
+  }
+}
