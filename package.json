@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.8.2",
-    "esbuild": "^0.14.42",
+    "esbuild": "^0.14.54",
     "tmp": "^0.2.1"
   },
   "devDependencies": {
