@@ -8,7 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@actions/core": "^1.8.2",
+    "@actions/core": "^1.9.1",
     "esbuild": "^0.15.9",
     "tmp": "^0.2.1"
   },
