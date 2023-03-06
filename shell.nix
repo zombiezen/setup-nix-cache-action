@@ -14,10 +14,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/0c408a087b4751c887e463e3848512c12017be25.tar.gz") {}
-}:
-
-with pkgs;
-mkShell {
-  packages = [ pkgs.nodejs-16_x ];
-}
+let
+  lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+  flakeCompatSource = fetchTarball {
+    url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+    sha256 = lock.nodes.flake-compat.locked.narHash;
+  };
+  flakeCompat = import flakeCompatSource { src = ./.; };
+in
+  flakeCompat.shellNix
