@@ -40,7 +40,7 @@ inputs:
       Secret access key for downloading and uploading artifacts
     required: false
 runs:
-  using: node16
+  using: node20
   main: dist/index.js
   post: dist/cleanup.js
 branding:

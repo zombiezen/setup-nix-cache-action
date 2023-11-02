@@ -10,12 +10,12 @@
     };
   };
 
-  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
+  outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
       in {
-        packages.nodejs = pkgs.nodejs-16_x;
+        packages.nodejs = pkgs.nodejs_20;
 
         devShells.default = pkgs.mkShell {
           packages = [
