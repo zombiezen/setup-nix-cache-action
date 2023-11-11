@@ -18,6 +18,7 @@ SPDX-License-Identifier: Apache-2.0
 **/
 
 import {
+  debug,
   getBooleanInput,
   getInput,
   info,
@@ -36,7 +37,6 @@ import {
   TEMP_DIR_STATE,
 } from './common';
 import { generate } from './config_gen';
-import { debug } from 'console';
 
 async function writeAsRoot(
   dstFile: string,
@@ -165,21 +165,16 @@ const NIXCACHED_PORT = 38380;
     if (nixcachedExe) {
       const setenvFlags = [];
       if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-        debug(
-          'Inheriting GOOGLE_APPLICATION_CREDENTIALS=%s',
-          process.env.GOOGLE_APPLICATION_CREDENTIALS,
-        );
-        setenvFlags.push('--setenv=GOOGLE_APPLICATION_CREDENTIALS');
+        const x = `GOOGLE_APPLICATION_CREDENTIALS=${process.env.GOOGLE_APPLICATION_CREDENTIALS}`;
+        debug(`Using ${x} for nixcached`);
+        setenvFlags.push(`--setenv=${x}`);
       }
-      if (credsPath) {
-        debug('Using AWS_SHARED_CREDENTIALS_FILE=%s', credsPath);
-        setenvFlags.push(`--setenv=AWS_SHARED_CREDENTIALS_FILE=${credsPath}`);
-      } else if (process.env.AWS_SHARED_CREDENTIALS_FILE) {
-        debug(
-          'Inheriting AWS_SHARED_CREDENTIALS_FILE=%s',
-          process.env.AWS_SHARED_CREDENTIALS_FILE,
-        );
-        setenvFlags.push(`--setenv=AWS_SHARED_CREDENTIALS_FILE`);
+      if (credsPath || process.env.AWS_SHARED_CREDENTIALS_FILE) {
+        const x = `AWS_SHARED_CREDENTIALS_FILE=${
+          credsPath || process.env.AWS_SHARED_CREDENTIALS_FILE
+        }`;
+        debug(`Using ${x} for nixcached`);
+        setenvFlags.push(`--setenv=${x}`);
       }
 
       debug('Starting nixcached serve...');
