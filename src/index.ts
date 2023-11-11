@@ -165,11 +165,20 @@ const NIXCACHED_PORT = 38380;
     if (nixcachedExe) {
       const setenvFlags = [];
       if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        debug(
+          'Inheriting GOOGLE_APPLICATION_CREDENTIALS=%s',
+          process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        );
         setenvFlags.push('--setenv=GOOGLE_APPLICATION_CREDENTIALS');
       }
       if (credsPath) {
+        debug('Using AWS_SHARED_CREDENTIALS_FILE=%s', credsPath);
         setenvFlags.push(`--setenv=AWS_SHARED_CREDENTIALS_FILE=${credsPath}`);
       } else if (process.env.AWS_SHARED_CREDENTIALS_FILE) {
+        debug(
+          'Inheriting AWS_SHARED_CREDENTIALS_FILE=%s',
+          process.env.AWS_SHARED_CREDENTIALS_FILE,
+        );
         setenvFlags.push(`--setenv=AWS_SHARED_CREDENTIALS_FILE`);
       }
 
