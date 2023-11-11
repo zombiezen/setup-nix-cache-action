@@ -1,6 +1,4 @@
-#!/usr/bin/env nix-shell
-#!nix-shell -i bash
-#shellcheck shell=bash
+#!/usr/bin/env bash
 #
 # Copyright 2022 Ross Light
 #
@@ -21,6 +19,10 @@
 GIT_DIR="$(git rev-parse --absolute-git-dir)"
 cat > "$GIT_DIR/hooks/pre-commit" <<EOF
 #!${SHELL}
-exec ./pre-commit.sh
+if command -v direnv > /dev/null; then
+  exec direnv exec . bash pre-commit.sh
+else
+  exec ./pre-commit.sh
+fi
 EOF
 chmod +x "$GIT_DIR/hooks/pre-commit"

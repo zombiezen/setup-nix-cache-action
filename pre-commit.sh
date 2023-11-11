@@ -1,6 +1,4 @@
-#!/usr/bin/env nix-shell
-#!nix-shell -i bash --pure
-#shellcheck shell=bash
+#!/usr/bin/env bash
 #
 # Copyright 2022 Ross Light
 #
