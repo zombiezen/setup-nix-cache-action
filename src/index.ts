@@ -176,7 +176,7 @@ const NIXCACHED_PORT = 38380;
       debug('Starting nixcached serve...');
       const SERVE_SERVICE = 'nixcached-serve.service';
       const servicesStarted = [SERVE_SERVICE];
-      runCommand([
+      await runCommand([
         'systemd-run',
         '--user',
         `--unit=${SERVE_SERVICE}`,
@@ -192,7 +192,7 @@ const NIXCACHED_PORT = 38380;
         debug('Starting nixcached upload...');
         const UPLOAD_SERVICE = 'nixcached-upload.service';
         servicesStarted.push(UPLOAD_SERVICE);
-        runCommand([
+        await runCommand([
           'systemd-run',
           '--user',
           `--unit=${UPLOAD_SERVICE}`,

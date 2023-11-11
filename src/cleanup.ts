@@ -34,7 +34,7 @@ import {
       servicesStarted instanceof Array &&
       servicesStarted.every((x) => typeof x === 'string')
     ) {
-      runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
+      await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
     }
 
     const tempDir = getState(TEMP_DIR_STATE);
