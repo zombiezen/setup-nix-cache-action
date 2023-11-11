@@ -27,7 +27,6 @@
           __impure = true;
 
           nativeBuildInputs = [
-            pkgs.coreutils
             self.packages.${system}.nodejs
           ];
 

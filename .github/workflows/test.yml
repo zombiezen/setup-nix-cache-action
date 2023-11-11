@@ -33,6 +33,6 @@ jobs:
         uses: cachix/install-nix-action@v23
         with:
           extra_nix_config: |
-            extra-experimental-features = ca-derivations impure-derivations
+            experimental-features = nix-command flakes ca-derivations impure-derivations
       - name: nix flake check
         run: nix flake check
