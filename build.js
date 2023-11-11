@@ -14,12 +14,14 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-require('esbuild').build({
-  entryPoints: ['src/index.ts', 'src/cleanup.ts'],
-  bundle: true,
-  sourcemap: false,
-  minify: true,
-  platform: 'node',
-  target: ['node16.13.1'],
-  outdir: 'dist',
-}).catch(() => process.exit(1));
+require('esbuild')
+  .build({
+    entryPoints: ['src/index.ts', 'src/cleanup.ts'],
+    bundle: true,
+    sourcemap: false,
+    minify: true,
+    platform: 'node',
+    target: ['node16.13.1'],
+    outdir: 'dist',
+  })
+  .catch(() => process.exit(1));

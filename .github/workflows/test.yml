@@ -18,32 +18,32 @@ name: Test
 on:
   push:
     branches:
-      - "**"
+      - '**'
   pull_request:
     branches:
-      - "main"
+      - 'main'
 jobs:
   precommit:
     name: Precommit
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Install Nix
-      uses: cachix/install-nix-action@v16
-    - name: Run tests
-      env:
-        NIX_BUILD_SHELL: bash
-      run: ./pre-commit.sh
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Nix
+        uses: cachix/install-nix-action@v16
+      - name: Run tests
+        env:
+          NIX_BUILD_SHELL: bash
+        run: ./pre-commit.sh
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Install Nix
-      uses: cachix/install-nix-action@v16
-    - name: Run tests
-      env:
-        NIX_BUILD_SHELL: bash
-      run: nix-shell --run 'npm install && npm test'
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install Nix
+        uses: cachix/install-nix-action@v16
+      - name: Run tests
+        env:
+          NIX_BUILD_SHELL: bash
+        run: nix-shell --run 'npm install && npm test'
