@@ -147,8 +147,8 @@ const NIXCACHED_PORT = 38380;
     } = await generate({
       useNixcached,
       substituters: useNixcached
-        ? substituters
-        : [`http://localhost:${NIXCACHED_PORT}`],
+        ? [`http://localhost:${NIXCACHED_PORT}`]
+        : substituters,
       trustedPublicKeys: spaceSepList(getInput('trusted_public_keys')),
       secretKeys: spaceSepList(getInput('secret_keys')),
       awsAccessKeyId: getInput('aws_access_key_id'),
