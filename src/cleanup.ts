@@ -29,12 +29,15 @@ import {
 
 (async () => {
   try {
-    const servicesStarted = JSON.parse(getState(SERVICES_STATE));
-    if (
-      servicesStarted instanceof Array &&
-      servicesStarted.every((x) => typeof x === 'string')
-    ) {
-      await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
+    const servicesStateData = getState(SERVICES_STATE);
+    if (servicesStateData) {
+      const servicesStarted = JSON.parse(servicesStateData);
+      if (
+        servicesStarted instanceof Array &&
+        servicesStarted.every((x) => typeof x === 'string')
+      ) {
+        await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
+      }
     }
 
     const tempDir = getState(TEMP_DIR_STATE);
