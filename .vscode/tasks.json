@@ -6,7 +6,7 @@
 		{
 			"label": "npm: build",
 			"type": "shell",
-			"command": "nix-shell --run 'npm run build'",
+			"command": "direnv exec . npm run build",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -18,7 +18,7 @@
 		{
 			"label": "npm: test",
 			"type": "shell",
-			"command": "nix-shell --run 'npm test'",
+			"command": "direnv exec . npm test",
 			"group": {
 				"kind": "test",
 				"isDefault": true
