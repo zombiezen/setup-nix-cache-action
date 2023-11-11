@@ -237,7 +237,6 @@ export async function downloadFile(
 
     let finishes = 0;
     const finishCallback = () => {
-      console.log('finished %d', finishes);
       finishes++;
       if (finishes === 2) {
         resolve(hasher.digest('hex'));
