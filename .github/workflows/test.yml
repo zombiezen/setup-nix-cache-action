@@ -26,6 +26,8 @@ jobs:
   check:
     name: nix flake check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -39,6 +41,9 @@ jobs:
   integration:
     name: Integration
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Check out code
         uses: actions/checkout@v4
