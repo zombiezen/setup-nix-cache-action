@@ -21,7 +21,7 @@ require('esbuild')
     sourcemap: false,
     minify: true,
     platform: 'node',
-    target: ['node16.13.1'],
+    target: ['node20.9.0'],
     outdir: 'dist',
   })
   .catch(() => process.exit(1));

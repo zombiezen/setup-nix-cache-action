@@ -31,6 +31,12 @@ inputs:
       Private keys for signing built artifacts.
       If provided, built derivations will be uploaded to the first substituter.
     required: false
+  use_nixcached:
+    description: >-
+      Whether to use github.com/zombiezen/nixcached to provide concurrent uploads
+      and cached downloads.
+      Only available on Linux.
+    default: 'false'
   aws_access_key_id:
     description: >-
       Access key ID for downloading and uploading artifacts

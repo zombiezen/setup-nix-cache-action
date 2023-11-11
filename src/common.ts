@@ -18,13 +18,32 @@ import { spawn } from 'child_process';
 
 export const TEMP_DIR_STATE = 'tempdir';
 export const SYSTEMD_DROPIN_STATE = 'systemd';
+export const SERVICES_STATE = 'systemd_services';
 
 export interface RootCommandOptions {
   ignoreStderr?: boolean;
 }
 
-export function runRootCommand(argv: string[], options?: RootCommandOptions): Promise<void> {
-  const proc = spawn('sudo', argv, {
+export function runCommand(argv: string[]): Promise<void> {
+  const proc = spawn(argv[0], argv.slice(1), {
+    stdio: ['ignore', 'ignore', 'inherit'],
+  });
+  return new Promise<void>((resolve, reject) => {
+    proc.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(argv[0] + ' exited with ' + code));
+      }
+    });
+  });
+}
+
+export function runRootCommand(
+  argv: string[],
+  options?: RootCommandOptions,
+): Promise<void> {
+  const proc = spawn('sudo', ['--non-interactive', ...argv], {
     stdio: ['ignore', 'ignore', options?.ignoreStderr ? 'ignore' : 'inherit'],
   });
   return new Promise<void>((resolve, reject) => {

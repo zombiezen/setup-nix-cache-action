@@ -19,10 +19,24 @@ SPDX-License-Identifier: Apache-2.0
 
 import { getState, info, setFailed } from '@actions/core';
 
-import { runRootCommand, TEMP_DIR_STATE, SYSTEMD_DROPIN_STATE } from './common';
+import {
+  runRootCommand,
+  TEMP_DIR_STATE,
+  SYSTEMD_DROPIN_STATE,
+  SERVICES_STATE,
+  runCommand,
+} from './common';
 
 (async () => {
   try {
+    const servicesStarted = JSON.parse(getState(SERVICES_STATE));
+    if (
+      servicesStarted instanceof Array &&
+      servicesStarted.every((x) => typeof x === 'string')
+    ) {
+      runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
+    }
+
     const tempDir = getState(TEMP_DIR_STATE);
     if (tempDir) {
       info('Removing ' + tempDir + '...');
