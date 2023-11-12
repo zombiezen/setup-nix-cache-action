@@ -44,6 +44,10 @@ describe('generate', () => {
     it('does not create a directory', () => {
       expect(results.tempDir).toBeNull();
     });
+
+    it('does not download nixcached', () => {
+      expect(results.nixcachedPipe).toBeNull();
+    });
   });
 
   describe('public cache', () => {
@@ -72,6 +76,10 @@ describe('generate', () => {
 
     it('does not create a directory', () => {
       expect(results.tempDir).toBeNull();
+    });
+
+    it('does not download nixcached', () => {
+      expect(results.nixcachedPipe).toBeNull();
     });
   });
 
@@ -122,6 +130,17 @@ describe('generate', () => {
         expect.stringContaining('https://cache.example.com'),
       );
     });
+
+    it('post-build-hook ends in newline', async () => {
+      const prefix = 'post-build-hook = ';
+      const postBuildHookLines = results.config
+        .split('\n')
+        .filter((line) => line.startsWith(prefix));
+      expect(postBuildHookLines.length).toBeGreaterThan(0);
+      const path = postBuildHookLines[0].substring(prefix.length);
+      const hookScript = await readFile(path, { encoding: 'utf-8' });
+      expect(hookScript).toEqual(expect.stringMatching(/\n$/));
+    });
   });
 
   describe('S3 cache', () => {
@@ -167,6 +186,96 @@ describe('generate', () => {
       const path = postBuildHookLines[0].substring(prefix.length);
       const hookScript = await readFile(path, { encoding: 'utf-8' });
       expect(hookScript).toEqual(expect.stringContaining(results.credsPath!));
+    });
+
+    it('post-build-hook ends in newline', async () => {
+      const prefix = 'post-build-hook = ';
+      const postBuildHookLines = results.config
+        .split('\n')
+        .filter((line) => line.startsWith(prefix));
+      expect(postBuildHookLines.length).toBeGreaterThan(0);
+      const path = postBuildHookLines[0].substring(prefix.length);
+      const hookScript = await readFile(path, { encoding: 'utf-8' });
+      expect(hookScript).toEqual(expect.stringMatching(/\n$/));
+    });
+  });
+
+  describe('nixcached', () => {
+    let results: GenerateResults;
+    beforeAll(async () => {
+      results = await generate({
+        substituters: ['http://localhost:8080'],
+        secretKeys: ['example-1:sekret'],
+        useNixcached: true,
+      });
+    });
+    afterAll(async () => {
+      if (results.tempDir) {
+        await rm(results.tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it('contains a substituters line', () => {
+      const lines = results.config.split('\n');
+      expect(lines).toContain('extra-substituters = http://localhost:8080');
+    });
+
+    it('sets a post-build-hook', async () => {
+      const lines = results.config.split('\n');
+      expect(lines).toContainEqual(expect.stringMatching(/^post-build-hook =/));
+    });
+
+    it('created an upload pipe', async () => {
+      expect(results.nixcachedPipe).not.toBeNull();
+      const info = await stat(results.nixcachedPipe!);
+      expect(info.isFIFO()).toBe(true);
+    });
+
+    it('post-build-hook references pipe', async () => {
+      expect(results.nixcachedPipe).not.toBeNull();
+
+      const prefix = 'post-build-hook = ';
+      const postBuildHookLines = results.config
+        .split('\n')
+        .filter((line) => line.startsWith(prefix));
+      expect(postBuildHookLines.length).toBeGreaterThan(0);
+      const path = postBuildHookLines[0].substring(prefix.length);
+      const hookScript = await readFile(path, { encoding: 'utf-8' });
+      expect(hookScript).toEqual(
+        expect.stringContaining(results.nixcachedPipe!),
+      );
+    });
+
+    it('post-build-hook references nixcached', async () => {
+      expect(results.nixcachedExe).not.toBeNull();
+
+      const prefix = 'post-build-hook = ';
+      const postBuildHookLines = results.config
+        .split('\n')
+        .filter((line) => line.startsWith(prefix));
+      expect(postBuildHookLines.length).toBeGreaterThan(0);
+      const path = postBuildHookLines[0].substring(prefix.length);
+      const hookScript = await readFile(path, { encoding: 'utf-8' });
+      expect(hookScript).toEqual(
+        expect.stringContaining(results.nixcachedExe!),
+      );
+    });
+
+    it('post-build-hook ends in newline', async () => {
+      const prefix = 'post-build-hook = ';
+      const postBuildHookLines = results.config
+        .split('\n')
+        .filter((line) => line.startsWith(prefix));
+      expect(postBuildHookLines.length).toBeGreaterThan(0);
+      const path = postBuildHookLines[0].substring(prefix.length);
+      const hookScript = await readFile(path, { encoding: 'utf-8' });
+      expect(hookScript).toEqual(expect.stringMatching(/\n$/));
+    });
+
+    it('downloaded nixcached', async () => {
+      expect(results.nixcachedExe).not.toBeNull();
+      const info = await stat(results.nixcachedExe!);
+      expect(info.mode & 0o100).not.toEqual(0);
     });
   });
 });

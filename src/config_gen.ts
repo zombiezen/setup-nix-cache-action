@@ -15,6 +15,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { debug, warning } from '@actions/core';
+import { which } from '@actions/io';
 import { createHash } from 'crypto';
 import { createWriteStream } from 'fs';
 import type { PathLike } from 'fs';
@@ -159,20 +160,23 @@ aws_secret_access_key = ${awsSecretAccessKey}
         }
         config += 'extra-secret-key-files = ' + keyFiles.join(' ') + '\n';
 
-        let hook = `#!/bin/bash
+        const bash = await which('bash');
+        let hook = `#!${bash}
 set -euo pipefail
 echo "Uploading paths: $OUT_PATHS" 1>&2
 `;
         if (useNixcached) {
-          hook += `echo "$OUT_PATHS" | xargs '${nixcachedExe}' send --output='${nixcachedPipe}' 1>&2`;
+          hook +=
+            `echo "$OUT_PATHS" | xargs '${nixcachedExe}' send --output='${nixcachedPipe}' 1>&2` +
+            '\n';
         } else {
           if (hasAwsKey) {
             hook += `export AWS_SHARED_CREDENTIALS_FILE='${credsPath}'` + '\n';
           }
-          hook += `echo "$OUT_PATHS" | xargs /nix/var/nix/profiles/default/bin/nix \\
+          hook +=
+            `echo "$OUT_PATHS" | xargs /nix/var/nix/profiles/default/bin/nix \\
     --extra-experimental-features nix-command \\
-    copy --to '${substituters[0]}' 1>&2
-  `;
+    copy --to '${substituters[0]}' 1>&2` + '\n';
         }
         const hookPath = path.join(tempDir, 'post-build-hook');
         await writeFile(hookPath, hook, { mode: 0o755 });

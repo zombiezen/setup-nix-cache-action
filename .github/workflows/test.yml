@@ -37,7 +37,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes ca-derivations impure-derivations
       - name: nix flake check
-        run: nix flake check
+        run: nix flake check --print-build-logs
   integration:
     name: Integration
     runs-on: ubuntu-latest
@@ -63,4 +63,4 @@ jobs:
           secret_keys: ${{ secrets.NIX_PRIVATE_KEY }}
           use_nixcached: true
       - name: nix build
-        run: nix build '.#devShells.x86_64-linux.default'
+        run: nix build --print-build-logs '.#devShells.x86_64-linux.default'
