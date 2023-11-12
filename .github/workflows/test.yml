@@ -63,4 +63,4 @@ jobs:
           secret_keys: ${{ secrets.NIX_PRIVATE_KEY }}
           use_nixcached: true
       - name: nix build
-        run: nix build '.#nodejs'
+        run: nix build '.#devShells.x86_64-linux.default'

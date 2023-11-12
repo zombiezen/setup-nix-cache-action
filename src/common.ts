@@ -20,6 +20,8 @@ export const TEMP_DIR_STATE = 'tempdir';
 export const SYSTEMD_DROPIN_STATE = 'systemd';
 export const SERVICES_STATE = 'systemd_services';
 
+export const UPLOAD_SERVICE_UNIT = 'nixcached-upload.service';
+
 export interface RootCommandOptions {
   ignoreStderr?: boolean;
 }

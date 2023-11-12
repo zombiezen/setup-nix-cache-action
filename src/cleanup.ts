@@ -25,6 +25,7 @@ import {
   SYSTEMD_DROPIN_STATE,
   SERVICES_STATE,
   runCommand,
+  UPLOAD_SERVICE_UNIT,
 } from './common';
 
 (async () => {
@@ -36,6 +37,13 @@ import {
         servicesStarted instanceof Array &&
         servicesStarted.every((x) => typeof x === 'string')
       ) {
+        if (servicesStarted.indexOf(UPLOAD_SERVICE_UNIT) >= 0) {
+          await runCommand([
+            'journalctl',
+            `--user-unit=${UPLOAD_SERVICE_UNIT}`,
+          ]);
+        }
+        info(`Stopping systemd services ${servicesStarted.join()}...`);
         await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
       }
     }

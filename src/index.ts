@@ -35,6 +35,7 @@ import {
   SERVICES_STATE,
   SYSTEMD_DROPIN_STATE,
   TEMP_DIR_STATE,
+  UPLOAD_SERVICE_UNIT,
 } from './common';
 import { generate } from './config_gen';
 
@@ -194,12 +195,11 @@ const NIXCACHED_PORT = 38380;
 
       if (nixcachedPipe) {
         debug('Starting nixcached upload...');
-        const UPLOAD_SERVICE = 'nixcached-upload.service';
-        servicesStarted.push(UPLOAD_SERVICE);
+        servicesStarted.push(UPLOAD_SERVICE_UNIT);
         await runCommand([
           'systemd-run',
           '--user',
-          `--unit=${UPLOAD_SERVICE}`,
+          `--unit=${UPLOAD_SERVICE_UNIT}`,
           '--property=KillMode=mixed',
           '--property=KillSignal=SIGHUP',
           ...setenvFlags,
