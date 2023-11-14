@@ -37,16 +37,29 @@ import {
         servicesStarted instanceof Array &&
         servicesStarted.every((x) => typeof x === 'string')
       ) {
+        let journalctl:
+          | { abort: AbortController; promise: Promise<void> }
+          | undefined;
         if (servicesStarted.indexOf(UPLOAD_SERVICE_UNIT) >= 0) {
-          await runCommand(
-            ['journalctl', `--user-unit=${UPLOAD_SERVICE_UNIT}`],
+          const abort = new AbortController();
+          const promise = runCommand(
+            ['journalctl', `--user-unit=${UPLOAD_SERVICE_UNIT}`, '--follow'],
             {
+              signal: abort.signal,
               directStdoutToStderr: true,
             },
           );
+          journalctl = { abort, promise };
         }
+        // Let journalctl take a moment to get going.
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
         info(`Stopping systemd services ${servicesStarted.join()}...`);
         await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
+        if (journalctl) {
+          journalctl.abort.abort();
+          await journalctl.promise;
+        }
       }
     }
 

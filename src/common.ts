@@ -25,6 +25,7 @@ export const UPLOAD_SERVICE_UNIT = 'nixcached-upload.service';
 export interface CommandOptions {
   directStdoutToStderr?: boolean;
   ignoreStderr?: boolean;
+  signal?: AbortSignal;
 }
 
 export function runCommand(
@@ -35,7 +36,17 @@ export function runCommand(
     stdio: stdioFromOptions(options),
   });
   return new Promise<void>((resolve, reject) => {
+    let listener: ((_event: Event) => void) | undefined;
+    if (options?.signal) {
+      listener = (_event: Event): void => {
+        proc.kill('SIGTERM');
+      };
+      options.signal.addEventListener('abort', listener);
+    }
     proc.on('close', (code) => {
+      if (options?.signal && listener) {
+        options.signal.removeEventListener('abort', listener);
+      }
       if (code === 0) {
         resolve();
       } else {
@@ -49,18 +60,7 @@ export function runRootCommand(
   argv: string[],
   options?: CommandOptions,
 ): Promise<void> {
-  const proc = spawn('sudo', ['--non-interactive', ...argv], {
-    stdio: stdioFromOptions(options),
-  });
-  return new Promise<void>((resolve, reject) => {
-    proc.on('close', (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(argv[0] + ' exited with ' + code));
-      }
-    });
-  });
+  return runCommand(['sudo', '--non-interactive', '--', ...argv], options);
 }
 
 function stdioFromOptions(
