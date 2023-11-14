@@ -14,7 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import { spawn } from 'child_process';
+import { StdioNull, spawn } from 'child_process';
 
 export const TEMP_DIR_STATE = 'tempdir';
 export const SYSTEMD_DROPIN_STATE = 'systemd';
@@ -22,13 +22,17 @@ export const SERVICES_STATE = 'systemd_services';
 
 export const UPLOAD_SERVICE_UNIT = 'nixcached-upload.service';
 
-export interface RootCommandOptions {
+export interface CommandOptions {
+  directStdoutToStderr?: boolean;
   ignoreStderr?: boolean;
 }
 
-export function runCommand(argv: string[]): Promise<void> {
+export function runCommand(
+  argv: string[],
+  options?: CommandOptions,
+): Promise<void> {
   const proc = spawn(argv[0], argv.slice(1), {
-    stdio: ['ignore', 'ignore', 'inherit'],
+    stdio: stdioFromOptions(options),
   });
   return new Promise<void>((resolve, reject) => {
     proc.on('close', (code) => {
@@ -43,10 +47,10 @@ export function runCommand(argv: string[]): Promise<void> {
 
 export function runRootCommand(
   argv: string[],
-  options?: RootCommandOptions,
+  options?: CommandOptions,
 ): Promise<void> {
   const proc = spawn('sudo', ['--non-interactive', ...argv], {
-    stdio: ['ignore', 'ignore', options?.ignoreStderr ? 'ignore' : 'inherit'],
+    stdio: stdioFromOptions(options),
   });
   return new Promise<void>((resolve, reject) => {
     proc.on('close', (code) => {
@@ -57,4 +61,14 @@ export function runRootCommand(
       }
     });
   });
+}
+
+function stdioFromOptions(
+  options: CommandOptions | undefined,
+): [StdioNull, StdioNull | number, StdioNull] {
+  return [
+    'ignore',
+    options?.directStdoutToStderr ? 2 : 'ignore',
+    options?.ignoreStderr ? 'ignore' : 'inherit',
+  ];
 }
