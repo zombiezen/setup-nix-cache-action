@@ -24,6 +24,8 @@ import {
   info,
   saveState,
   setFailed,
+  startGroup,
+  endGroup,
 } from '@actions/core';
 import { spawn } from 'child_process';
 import { stat } from 'fs/promises';
@@ -128,6 +130,14 @@ const NIXCACHED_PORT = 38380;
 
 (async () => {
   try {
+    if (platform === 'linux') {
+      startGroup('systemd version');
+      await runCommand(['systemctl', '--version'], {
+        directStdoutToStderr: true,
+      });
+      endGroup();
+    }
+
     info('Generating configuration...');
     const useNixcached = getBooleanInput('use_nixcached');
     if (useNixcached && platform !== 'linux') {
