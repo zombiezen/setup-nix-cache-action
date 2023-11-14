@@ -58,7 +58,11 @@ import {
         await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
         if (journalctl) {
           journalctl.abort.abort();
-          await journalctl.promise;
+          try {
+            await journalctl.promise;
+          } catch (_) {
+            // Since we signal journalctl to stop, it will never succeed.
+          }
         }
       }
     }

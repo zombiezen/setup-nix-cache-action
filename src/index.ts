@@ -164,7 +164,7 @@ const NIXCACHED_PORT = 38380;
 
     // Start nixcached, if needed.
     if (nixcachedExe) {
-      const setenvFlags = [];
+      const setenvFlags = [`--setenv=PATH=${process.env.PATH}`];
       if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
         const x = `GOOGLE_APPLICATION_CREDENTIALS=${process.env.GOOGLE_APPLICATION_CREDENTIALS}`;
         debug(`Using ${x} for nixcached`);
