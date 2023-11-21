@@ -32,6 +32,8 @@ import { stat } from 'fs/promises';
 import { platform } from 'process';
 
 import {
+  NIXCACHED_EXE_STATE,
+  NIXCACHED_PIPE_STATE,
   runCommand,
   runRootCommand,
   SERVICES_STATE,
@@ -174,6 +176,8 @@ const NIXCACHED_PORT = 38380;
 
     // Start nixcached, if needed.
     if (nixcachedExe) {
+      saveState(NIXCACHED_EXE_STATE, nixcachedExe);
+
       const setenvFlags = [`--setenv=PATH=${process.env.PATH}`];
       if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
         const x = `GOOGLE_APPLICATION_CREDENTIALS=${process.env.GOOGLE_APPLICATION_CREDENTIALS}`;
@@ -202,8 +206,11 @@ const NIXCACHED_PORT = 38380;
         '--',
         substituters[0],
       ]);
+      saveState(SERVICES_STATE, servicesStarted);
 
       if (nixcachedPipe) {
+        saveState(NIXCACHED_PIPE_STATE, nixcachedPipe);
+
         debug('Starting nixcached upload...');
         servicesStarted.push(UPLOAD_SERVICE_UNIT);
         await runCommand([
@@ -216,13 +223,13 @@ const NIXCACHED_PORT = 38380;
           nixcachedExe,
           'upload',
           '--keep-alive',
+          '--allow-finish',
           `--input=${nixcachedPipe}`,
           '--',
           substituters[0],
         ]);
+        saveState(SERVICES_STATE, servicesStarted);
       }
-
-      saveState(SERVICES_STATE, servicesStarted);
     }
 
     info('Saving configuration...');

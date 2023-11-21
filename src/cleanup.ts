@@ -17,7 +17,7 @@ limitations under the License.
 SPDX-License-Identifier: Apache-2.0
 **/
 
-import { getState, info, setFailed } from '@actions/core';
+import { error, getState, info, setFailed } from '@actions/core';
 
 import {
   runRootCommand,
@@ -26,44 +26,80 @@ import {
   SERVICES_STATE,
   runCommand,
   UPLOAD_SERVICE_UNIT,
+  queryCommand,
+  NIXCACHED_EXE_STATE,
+  NIXCACHED_PIPE_STATE,
 } from './common';
+
+async function shutDownUploadService(
+  nixcachedExe: string,
+  nixcachedPipe: string,
+) {
+  const journalctlAbort = new AbortController();
+  const journalctlPromise = runCommand(
+    ['journalctl', `--user-unit=${UPLOAD_SERVICE_UNIT}`, '--follow'],
+    {
+      signal: journalctlAbort.signal,
+      directStdoutToStderr: true,
+    },
+  );
+
+  await runCommand(
+    [nixcachedExe, 'send', '--finish', `--output=${nixcachedPipe}`],
+    {
+      directStdoutToStderr: true,
+    },
+  );
+
+  // Wait until service has exited.
+  for (;;) {
+    // Always wait a little bit because we want to give journalctl space to show output.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const result = await queryCommand(
+      ['systemctl', 'is-active', '--user', '--quiet', UPLOAD_SERVICE_UNIT],
+      { directStdoutToStderr: true },
+    );
+    if (result !== 0) {
+      break;
+    }
+  }
+
+  // Stop journalctl subprocess.
+  journalctlAbort.abort();
+  try {
+    await journalctlPromise;
+  } catch (_) {
+    // Since we signal journalctl to stop, it will never succeed.
+  }
+}
 
 (async () => {
   try {
     const servicesStateData = getState(SERVICES_STATE);
     if (servicesStateData) {
-      const servicesStarted = JSON.parse(servicesStateData);
+      let servicesStarted = JSON.parse(servicesStateData);
       if (
         servicesStarted instanceof Array &&
         servicesStarted.every((x) => typeof x === 'string')
       ) {
-        let journalctl:
-          | { abort: AbortController; promise: Promise<void> }
-          | undefined;
         if (servicesStarted.indexOf(UPLOAD_SERVICE_UNIT) >= 0) {
-          const abort = new AbortController();
-          const promise = runCommand(
-            ['journalctl', `--user-unit=${UPLOAD_SERVICE_UNIT}`, '--follow'],
-            {
-              signal: abort.signal,
-              directStdoutToStderr: true,
-            },
-          );
-          journalctl = { abort, promise };
+          const nixcachedExe = getState(NIXCACHED_EXE_STATE);
+          const nixcachedPipe = getState(NIXCACHED_PIPE_STATE);
+          if (!nixcachedExe || !nixcachedPipe) {
+            error(
+              `Running ${UPLOAD_SERVICE_UNIT}, but ${NIXCACHED_EXE_STATE} and/or ${NIXCACHED_PIPE_STATE} not set in state!`,
+            );
+          } else {
+            await shutDownUploadService(nixcachedExe, nixcachedPipe);
+            servicesStarted = servicesStarted.filter(
+              (x) => x != UPLOAD_SERVICE_UNIT,
+            );
+          }
         }
-        // Let journalctl take a moment to get going.
-        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         info(`Stopping systemd services ${servicesStarted.join()}...`);
         await runCommand(['systemctl', 'stop', '--user', ...servicesStarted]);
-        if (journalctl) {
-          journalctl.abort.abort();
-          try {
-            await journalctl.promise;
-          } catch (_) {
-            // Since we signal journalctl to stop, it will never succeed.
-          }
-        }
       }
     }
 
