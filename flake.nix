@@ -16,6 +16,7 @@
         devShells.default = pkgs.mkShell {
           packages = [
             self.packages.${system}.nodejs
+            pkgs.google-cloud-sdk
           ];
         };
 
