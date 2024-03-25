@@ -50,30 +50,29 @@ const nixcachedBinaries: {
 } = {
   linux: {
     x64: {
-      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.2/nixcached-0.3.2-linux_amd64',
+      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.3/nixcached-0.3.3-linux_amd64',
       sha256:
-        'b4a9c0d6206b83874d0ef8db5cc34836cad76d331108c7d128f439eb528e5374',
+        'ac1507259aacd7bbcf83916d8e23a587cb659dc6ca9285738981ee8e799b429b',
     },
     arm64: {
-      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.2/nixcached-0.3.2-linux_arm64',
+      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.3/nixcached-0.3.3-linux_arm64',
       sha256:
-        '686059a814fcc66215236bbc98148a3fd173c7f79e0d1dec75c7ad3f2d60e810',
+        'a19f6578563140a1bad67b184fb9bf73c1721e05ff13e80cec4fc3e7fc65207b',
     },
   },
   darwin: {
     x64: {
-      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.2/nixcached-0.3.2-darwin_amd64',
+      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.3/nixcached-0.3.3-darwin_amd64',
       sha256:
-        'fb367b6e53c8985fe6265974ca1b6a7e917761dc552dc24f6af0de3d6d82913b',
+        '88fb89110e1313b03786d7da3569a4ad0c5ff47fac5dda6679bee47f4acbca63',
     },
     arm64: {
-      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.2/nixcached-0.3.2-darwin_arm64',
+      url: 'https://github.com/zombiezen/nixcached/releases/download/v0.3.3/nixcached-0.3.3-darwin_arm64',
       sha256:
-        '208457bc55d4328cf7ebeef4f7eab6708f8defe2f71399fa54d7d3317e46c3ce',
+        'e832eb15ef835feacad9b34da2823f63349cde4b8de5fedab71a86fec7d84490',
     },
   },
 };
-
 export async function generate(input: GenerateInput): Promise<GenerateResults> {
   const {
     substituters,
