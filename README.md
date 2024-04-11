@@ -23,7 +23,7 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@v23
     - name: Set up cache
-      uses: zombiezen/setup-nix-cache-action@v0.3.2
+      uses: zombiezen/setup-nix-cache-action@v0.4.0
       with:
         substituters: s3://example-bucket
         secret_keys: ${{ secrets.NIX_PRIVATE_KEY }}
@@ -51,7 +51,7 @@ jobs:
       # for details on how to set up.
       uses: google-github-actions/auth@v1
     - name: Set up cache
-      uses: zombiezen/setup-nix-cache-action@v0.3.2
+      uses: zombiezen/setup-nix-cache-action@v0.4.0
       with:
         substituters: gs://example-bucket
         secret_keys: ${{ secrets.NIX_PRIVATE_KEY }}
@@ -79,7 +79,7 @@ jobs:
     - name: Install Nix
       uses: cachix/install-nix-action@v23
     - name: Set up cache
-      uses: zombiezen/setup-nix-cache-action@v0.3.2
+      uses: zombiezen/setup-nix-cache-action@v0.4.0
       with:
         substituters: s3://example-bucket?endpoint=https://storage.googleapis.com
         secret_keys: ${{ secrets.NIX_PRIVATE_KEY }}

@@ -1,6 +1,6 @@
 {
   "name": "setup-nix-cache-action",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Configure Nix to read from (and optionally write to) a custom cache",
   "main": "dist/index.js",
   "scripts": {
