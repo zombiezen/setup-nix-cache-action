@@ -123,6 +123,11 @@ Secret access key for downloading and uploading artifacts
 If `true`, use [nixcached][] for uploading and downloading.
 This permits concurrent uploading and more straightforward authentication.
 
+### `nixcached_upload_options`
+
+Additional arguments to send to `nixcached upload`.
+POSIX-shell-style quoting is supported.
+
 ## License
 
 [Apache 2.0](LICENSE)

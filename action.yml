@@ -37,6 +37,10 @@ inputs:
       and cached downloads.
       Only available on Linux.
     default: 'false'
+  nixcached_upload_options:
+    description: >-
+      Additional arguments to `nixcached upload`.
+    required: false
   aws_access_key_id:
     description: >-
       Access key ID for downloading and uploading artifacts

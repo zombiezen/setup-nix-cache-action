@@ -30,6 +30,7 @@ import {
 import { spawn } from 'child_process';
 import { stat } from 'fs/promises';
 import { platform } from 'process';
+import { split as shlexSplit } from 'shlex';
 
 import {
   NIXCACHED_EXE_STATE,
@@ -213,6 +214,7 @@ const NIXCACHED_PORT = 38380;
 
         debug('Starting nixcached upload...');
         servicesStarted.push(UPLOAD_SERVICE_UNIT);
+        const extraArgs = shlexSplit(getInput('nixcached_upload_options'));
         await runCommand([
           'systemd-run',
           '--user',
@@ -222,6 +224,7 @@ const NIXCACHED_PORT = 38380;
           ...setenvFlags,
           nixcachedExe,
           'upload',
+          ...extraArgs,
           '--keep-alive',
           '--allow-finish',
           `--input=${nixcachedPipe}`,
